@@ -107,8 +107,12 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_file_name",
+							"type": "Expression"
+						},
 						"folderPath": "csvfiles",
-						"fileSystem": "reporting"
+						"fileSystem": "managerinput"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -256,7 +260,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "csv",
+						"folderPath": "csvfiles",
 						"fileSystem": "mangerinput"
 					},
 					"columnDelimiter": ",",
@@ -371,7 +375,8 @@
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
 									"recursive": true,
-									"wildcardFileName": "*",
+									"wildcardFolderPath": "csvfiles",
+									"wildcardFileName": "*.csv",
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -700,36 +705,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Man_trigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PL_Manager_event",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/mangerinput/blobs/",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('Man_trigger_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/PL_Manager_event')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/sch_trigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -758,6 +733,102 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/PL_OnlySelectedFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Master')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "PL_Manager_event",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "PL_OnlySelectedFiles",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_Manager_event",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "PL_OnlySelectedFiles",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_OnlySelectedFiles",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PL_Manager_event')]",
+				"[concat(variables('factoryId'), '/pipelines/PL_OnlySelectedFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Man_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PL_Manager_event",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "PL_Master",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/mangerinput/blobs/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('Man_trigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PL_Manager_event')]",
+				"[concat(variables('factoryId'), '/pipelines/PL_Master')]"
 			]
 		}
 	]
