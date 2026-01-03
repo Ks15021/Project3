@@ -1,0 +1,24 @@
+{
+	"name": "Man_trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_Manager_event",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/mangerinput/blobs/",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/80bf3767-19f0-4694-9fca-d6ab03a4c69c/resourceGroups/RG_project_3/providers/Microsoft.Storage/storageAccounts/adlsdevproject3",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
