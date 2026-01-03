@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-dev-project3"
+		},
+		"LS_adls_csv_sink_accountKey": {
+			"value": ""
+		},
+		"LS_Git_csv_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com"
+		},
+		"LS_adls_csv_sink_properties_typeProperties_url": {
+			"value": "https://adlsdevproject3.dfs.core.windows.net/"
+		},
+		"Man_trigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/80bf3767-19f0-4694-9fca-d6ab03a4c69c/resourceGroups/RG_project_3/providers/Microsoft.Storage/storageAccounts/adlsdevproject3"
+		}
+	}
+}
