@@ -15,8 +15,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().p_file_name",
+					"type": "Expression"
+				},
 				"folderPath": "csvfiles",
-				"fileSystem": "reporting"
+				"fileSystem": "managerinput"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

@@ -1,0 +1,47 @@
+{
+	"name": "PL_Master",
+	"properties": {
+		"activities": [
+			{
+				"name": "PL_Manager_event",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "PL_OnlySelectedFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Manager_event",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "PL_OnlySelectedFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_OnlySelectedFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}
